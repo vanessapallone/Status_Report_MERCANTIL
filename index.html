@@ -1,718 +1,152 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Status Report - Mercantil</title>
-  <style>
-    :root {
-      --bg: #f4f7fb;
-      --card: #ffffff;
-      --text: #0f172a;
-      --muted: #64748b;
-      --line: #e2e8f0;
-      --primary: #1d4ed8;
-      --primary-soft: #dbeafe;
-      --warning: #f59e0b;
-      --warning-soft: #fef3c7;
-      --danger: #dc2626;
-      --danger-soft: #fee2e2;
-      --success: #16a34a;
-      --success-soft: #dcfce7;
-      --shadow: 0 10px 25px rgba(15, 23, 42, .08);
-      --radius: 18px;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Inter, Segoe UI, Arial, sans-serif;
-      background: linear-gradient(180deg, #eff6ff 0%, var(--bg) 180px);
-      color: var(--text);
-    }
-    .wrap {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 32px 24px 56px;
-    }
-    .hero {
-      background: radial-gradient(circle at top right, #bfdbfe 0, transparent 30%),
-                  linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
-      color: white;
-      border-radius: 28px;
-      padding: 32px;
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-    }
-    .hero h1 {
-      margin: 0 0 10px;
-      font-size: 34px;
-      line-height: 1.05;
-      letter-spacing: -.02em;
-    }
-    .hero p {
-      margin: 0;
-      font-size: 16px;
-      max-width: 780px;
-      color: rgba(255,255,255,.92);
-    }
-    .hero .meta {
-      margin-top: 18px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .pill {
-      background: rgba(255,255,255,.14);
-      border: 1px solid rgba(255,255,255,.18);
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-size: 13px;
-      color: #fff;
-    }
-    .grid {
-      display: grid;
-      gap: 18px;
-      margin-top: 22px;
-    }
-    .cards {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-    .two {
-      grid-template-columns: 1.2fr .8fr;
-    }
-    .three {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-    .card {
-      background: var(--card);
-      border: 1px solid rgba(148,163,184,.18);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 22px;
-    }
-    .kpi-label {
-      color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-    }
-    .kpi-value {
-      font-size: 34px;
-      font-weight: 800;
-      line-height: 1;
-      margin-bottom: 6px;
-    }
-    .kpi-note {
-      font-size: 14px;
-      color: var(--muted);
-    }
-    h2 {
-      margin: 0 0 16px;
-      font-size: 22px;
-      letter-spacing: -.01em;
-    }
-    h3 {
-      margin: 0 0 14px;
-      font-size: 18px;
-    }
-    .summary-list {
-      margin: 0;
-      padding-left: 18px;
-      color: #1e293b;
-    }
-    .summary-list li {
-      margin: 0 0 12px;
-      line-height: 1.55;
-    }
-    .bar {
-      width: 100%;
-      height: 12px;
-      background: #eef2ff;
-      border-radius: 999px;
-      overflow: hidden;
-    }
-    .bar > span {
-      display: block;
-      height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
-    }
-    .status-row, .timeline-item {
-      display: grid;
-      grid-template-columns: 180px 1fr 30px;
-      gap: 14px;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .status-label, .owner-meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      font-size: 14px;
-    }
-    .status-count {
-      text-align: right;
-      font-weight: 700;
-      color: var(--muted);
-      font-size: 14px;
-    }
-    .mini-dot {
-      width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px;
-      vertical-align: middle;
-    }
-    .owner-row {
-      margin-bottom: 14px;
-    }
-    .owner-meta strong { font-size: 15px; }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      border: 1px solid transparent;
-      line-height: 1;
-      white-space: nowrap;
-    }
-    .status-progress, .mini-dot.status-progress {
-      background: var(--warning-soft);
-      color: #92400e;
-      border-color: #fcd34d;
-    }
-    .status-pending, .mini-dot.status-pending {
-      background: #f8fafc;
-      color: #334155;
-      border-color: #cbd5e1;
-    }
-    .status-done, .mini-dot.status-done {
-      background: var(--success-soft);
-      color: #166534;
-      border-color: #86efac;
-    }
-    .status-risk, .mini-dot.status-risk {
-      background: var(--danger-soft);
-      color: #991b1b;
-      border-color: #fca5a5;
-    }
-    .status-neutral, .mini-dot.status-neutral {
-      background: #eff6ff;
-      color: #1d4ed8;
-      border-color: #bfdbfe;
-    }
-    .prio-high {
-      background: #fef2f2;
-      color: #991b1b;
-      border-color: #fecaca;
-    }
-    .prio-normal {
-      background: #ecfeff;
-      color: #155e75;
-      border-color: #a5f3fc;
-    }
-    .section-title {
-      margin: 34px 0 14px;
-      font-size: 24px;
-      letter-spacing: -.02em;
-    }
-    .activity-card {
-      background: linear-gradient(180deg, #fff, #fbfdff);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 18px;
-      box-shadow: 0 6px 18px rgba(15, 23, 42, .04);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .activity-top {
-      display: flex;
-      gap: 16px;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-    .activity-top h4 {
-      margin: 0;
-      font-size: 17px;
-      line-height: 1.35;
-    }
-    .activity-badges {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-    .activity-meta {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .activity-card p {
-      margin: 0;
-      color: #334155;
-      line-height: 1.6;
-      font-size: 14px;
-    }
-    .chip {
-      display: inline-flex;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .chip-risk {
-      background: var(--danger-soft);
-      color: #991b1b;
-      border: 1px solid #fecaca;
-    }
-    .muted {
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .table-wrap {
-      overflow-x: auto;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: #fff;
-      box-shadow: var(--shadow);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 980px;
-    }
-    thead th {
-      background: #eff6ff;
-      color: #1e3a8a;
-      text-align: left;
-      padding: 14px 16px;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-    tbody td {
-      padding: 14px 16px;
-      border-top: 1px solid #eef2f7;
-      vertical-align: top;
-      font-size: 14px;
-      line-height: 1.45;
-    }
-    tbody tr:hover {
-      background: #fafcff;
-    }
-    .footnote {
-      margin-top: 16px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .empty {
-      padding: 18px;
-      border-radius: 14px;
-      background: #f8fafc;
-      color: var(--muted);
-      border: 1px dashed #cbd5e1;
-    }
-    @media (max-width: 980px) {
-      .cards, .two, .three {
-        grid-template-columns: 1fr;
-      }
-      .activity-top {
-        flex-direction: column;
-      }
-      .status-row, .timeline-item {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+    <title>Status Report Mercantil</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        h1 { color: #2c3e50; }
+        .summary { background:#f4f6f7; padding:15px; border-radius:8px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #2c3e50; color: white; }
+    </style>
 </head>
 <body>
-  <div class="wrap">
-    <section class="hero">
-      <h1>Status Report — Projeto Mercantil</h1>
-      <p>Relatório executivo em HTML gerado a partir da planilha <strong>Atividades-MERCANTIL_1304.xlsx</strong>, consolidando progresso, riscos, responsáveis e marcos previstos.</p>
-      <div class="meta">
-        <span class="pill">Base analisada: 9 atividades</span>
-        <span class="pill">Data de referência: 13/04/2026</span>
-        <span class="pill">Status dominante: Em andamento</span>
-      </div>
-    </section>
+    <h1>Status Report - Projeto Mercantil</h1>
+    <p><b>Atualizado em:</b> 13/04/2026 14:28</p>
 
-    <section class="grid cards">
-      <div class="card">
-        <div class="kpi-label">Atividades totais</div>
-        <div class="kpi-value">9</div>
-        <div class="kpi-note">Frentes abertas na planilha</div>
-      </div>
-      <div class="card">
-        <div class="kpi-label">Em andamento</div>
-        <div class="kpi-value">6</div>
-        <div class="kpi-note">67% do total</div>
-      </div>
-      <div class="card">
-        <div class="kpi-label">Pendentes</div>
-        <div class="kpi-value">3</div>
-        <div class="kpi-note">33% do total</div>
-      </div>
-      <div class="card">
-        <div class="kpi-label">Com risco registrado</div>
-        <div class="kpi-value">6</div>
-        <div class="kpi-note">67% do total</div>
-      </div>
-    </section>
+    <div class="summary">
+        <h2>Resumo de Status</h2>
+        <ul><li>🟡 EM ANDAMENTO: 6</li><li>🟡 PENDENTE: 4</li></ul>
+    </div>
 
-    <section class="grid two">
-      <div class="card">
-        <h2>Leitura executiva</h2>
-        <ul class="summary-list"><li>O projeto possui <strong>9 frentes abertas</strong>; todas estão classificadas como <strong>prioridade alta</strong>.</li><li>Há <strong>6 atividades em andamento</strong> e <strong>3 pendentes</strong>; não há itens marcados como concluídos na planilha.</li><li><strong>6 atividades</strong> já registram risco/impedimento, com destaque para <strong>atraso no projeto</strong> como principal alerta recorrente.</li><li>O curto prazo está concentrado: <strong>4 itens vencem hoje (13/04/2026)</strong> e <strong>8 itens</strong> têm previsão até <strong>17/04/2026</strong>.</li></ul>
-      </div>
-      <div class="card">
-        <h2>Distribuição por status</h2>
-        
-        <div class="status-row">
-          <div class="status-label"><span class="mini-dot status-progress"></span>Em Andamento</div>
-          <div class="bar"><span class="status-progress" style="width:67%"></span></div>
-          <div class="status-count">6</div>
-        </div>
-        
-
-        <div class="status-row">
-          <div class="status-label"><span class="mini-dot status-pending"></span>Pendente</div>
-          <div class="bar"><span class="status-pending" style="width:33%"></span></div>
-          <div class="status-count">3</div>
-        </div>
-        
-      </div>
-    </section>
-
-    <section class="grid two">
-      <div class="card">
-        <h2>Carga por responsável</h2>
-        
-        <div class="owner-row">
-          <div class="owner-meta">
-            <span>Rafael - Mercantil</span>
-            <strong>4</strong>
-          </div>
-          <div class="bar"><span style="width:44%"></span></div>
-        </div>
-
-        <div class="owner-row">
-          <div class="owner-meta">
-            <span>Integração</span>
-            <strong>2</strong>
-          </div>
-          <div class="bar"><span style="width:22%"></span></div>
-        </div>
-
-        <div class="owner-row">
-          <div class="owner-meta">
-            <span>Produto - Compliance</span>
-            <strong>1</strong>
-          </div>
-          <div class="bar"><span style="width:11%"></span></div>
-        </div>
-
-        <div class="owner-row">
-          <div class="owner-meta">
-            <span>Produto - Compliance - Integração</span>
-            <strong>1</strong>
-          </div>
-          <div class="bar"><span style="width:11%"></span></div>
-        </div>
-
-        <div class="owner-row">
-          <div class="owner-meta">
-            <span>Rafael Rossi - Compliance</span>
-            <strong>1</strong>
-          </div>
-          <div class="bar"><span style="width:11%"></span></div>
-        </div>
-      </div>
-      <div class="card">
-        <h2>Agenda de entregas</h2>
-        
-        <div class="timeline-item">
-          <div class="timeline-date">Hoje</div>
-          <div class="bar"><span style="width:44%"></span></div>
-          <div class="status-count">4</div>
-        </div>
-
-        <div class="timeline-item">
-          <div class="timeline-date">17/04/2026</div>
-          <div class="bar"><span style="width:44%"></span></div>
-          <div class="status-count">4</div>
-        </div>
-
-        <div class="timeline-item">
-          <div class="timeline-date">24/04/2026</div>
-          <div class="bar"><span style="width:14%"></span></div>
-          <div class="status-count">1</div>
-        </div>
-        <div class="footnote">Observação: a planilha não possui itens marcados como atrasados até a data de referência, mas há concentração relevante de vencimentos em curto prazo.</div>
-      </div>
-    </section>
-
-    <h2 class="section-title">Itens que vencem hoje</h2>
-    <section class="grid three">
-      
-        <div class="activity-card">
-          <div class="activity-top">
-            <h4>Associação de linhas do Pedido </h4>
-            <div class="activity-badges"><span class="badge status-progress">EM ANDAMENTO</span><span class="badge prio-high">Alta</span></div>
-          </div>
-          <div class="activity-meta">
-            <span><strong>Responsável:</strong> Produto - Compliance</span>
-            <span><strong>Data prevista:</strong> 13/04/2026</span>
-          </div>
-          <p>Rafael solicitou que o pedido valide o valor por linha, e não consumindo o saldo do pedido, respeitando o valor e a linha e não debitando o valor total do pedido e deixando saldo em aberto<br>13/04 - Conforme MD50 e CR60, associadas a proposta 28792, o desenvolvimento do match para Gestão de Pedidos acontece utilizando o número do PEDIDO e o Departamento, não há critério de validação por Valor do item. Caso seja necessário essa validação, será preciso efetuar uma alteração na regra da customização.<br></p>
-          <div class="activity-risk"><strong>Risco:</strong> <span class="chip chip-risk">Atraso no projeto</span></div>
-        </div>
-        
-
-        <div class="activity-card">
-          <div class="activity-top">
-            <h4>Captura de NFSe no Taxfy</h4>
-            <div class="activity-badges"><span class="badge status-progress">EM ANDAMENTO</span><span class="badge prio-high">Alta</span></div>
-          </div>
-          <div class="activity-meta">
-            <span><strong>Responsável:</strong> Rafael Rossi - Compliance</span>
-            <span><strong>Data prevista:</strong> 13/04/2026</span>
-          </div>
-          <p>Precisamos de Notas Fiscal de evidencia para analisar os parametros de captura no Taxfy<br>10/04 - Foi aberto chamado para verificar o motivo pelo qual 2 notas não capturadas;<br>13/04 - Rossi fez a extração do relatório com a relação de todos os municipios que estão configurado no Taxfy, para o Banco Mercantil, a fim de fazermos enviarmos para o Banco validar se há necessidade da inclusão de mais municipios, por exemplo Ribeirão Preto não está cadastrado no Taxfy, sendo hoje sua captura feita por envio da NF para o e-mail do Taxfy.</p>
-          <div class="activity-risk"><strong>Risco:</strong> <span class="muted">Sem risco registrado</span></div>
-        </div>
-        
-
-        <div class="activity-card">
-          <div class="activity-top">
-            <h4>Match automatico</h4>
-            <div class="activity-badges"><span class="badge status-pending">PENDENTE</span><span class="badge prio-high">Alta</span></div>
-          </div>
-          <div class="activity-meta">
-            <span><strong>Responsável:</strong> Rafael - Mercantil</span>
-            <span><strong>Data prevista:</strong> 13/04/2026</span>
-          </div>
-          <p>Match está acontecendo, Rafael irá validar um processo  para dar ok.</p>
-          <div class="activity-risk"><strong>Risco:</strong> <span class="muted">Sem risco registrado</span></div>
-        </div>
-        
-
-        <div class="activity-card">
-          <div class="activity-top">
-            <h4>Tempo de Processamento - Pedidos</h4>
-            <div class="activity-badges"><span class="badge status-pending">PENDENTE</span><span class="badge prio-high">Alta</span></div>
-          </div>
-          <div class="activity-meta">
-            <span><strong>Responsável:</strong> Rafael - Mercantil</span>
-            <span><strong>Data prevista:</strong> 13/04/2026</span>
-          </div>
-          <p>Rafael precisa validar ainda, não conseguiu testar esse ponto.</p>
-          <div class="activity-risk"><strong>Risco:</strong> <span class="chip chip-risk">Atraso no projeto</span></div>
-        </div>
-        
-    </section>
-
-    <h2 class="section-title">Itens com risco ou impedimento</h2>
-    <section class="grid three">
-      
-        <div class="activity-card">
-          <div class="activity-top">
-            <h4>Associação de linhas do Pedido </h4>
-            <div class="activity-badges"><span class="badge status-progress">EM ANDAMENTO</span><span class="badge prio-high">Alta</span></div>
-          </div>
-          <div class="activity-meta">
-            <span><strong>Responsável:</strong> Produto - Compliance</span>
-            <span><strong>Data prevista:</strong> 13/04/2026</span>
-          </div>
-          <p>Rafael solicitou que o pedido valide o valor por linha, e não consumindo o saldo do pedido, respeitando o valor e a linha e não debitando o valor total do pedido e deixando saldo em aberto<br>13/04 - Conforme MD50 e CR60, associadas a proposta 28792, o desenvolvimento do match para Gestão de Pedidos acontece utilizando o número do PEDIDO e o Departamento, não há critério de validação por Valor do item. Caso seja necessário essa validação, será preciso efetuar uma alteração na regra da customização.<br></p>
-          <div class="activity-risk"><strong>Risco:</strong> <span class="chip chip-risk">Atraso no projeto</span></div>
-        </div>
-        
-
-        <div class="activity-card">
-          <div class="activity-top">
-            <h4>Tempo de Processamento - Pedidos</h4>
-            <div class="activity-badges"><span class="badge status-pending">PENDENTE</span><span class="badge prio-high">Alta</span></div>
-          </div>
-          <div class="activity-meta">
-            <span><strong>Responsável:</strong> Rafael - Mercantil</span>
-            <span><strong>Data prevista:</strong> 13/04/2026</span>
-          </div>
-          <p>Rafael precisa validar ainda, não conseguiu testar esse ponto.</p>
-          <div class="activity-risk"><strong>Risco:</strong> <span class="chip chip-risk">Atraso no projeto</span></div>
-        </div>
-        
-
-        <div class="activity-card">
-          <div class="activity-top">
-            <h4>CTe</h4>
-            <div class="activity-badges"><span class="badge status-progress">EM ANDAMENTO</span><span class="badge prio-high">Alta</span></div>
-          </div>
-          <div class="activity-meta">
-            <span><strong>Responsável:</strong> Rafael - Mercantil</span>
-            <span><strong>Data prevista:</strong> 17/04/2026</span>
-          </div>
-          <p>Cte, Rafael estava fazendo teste - vai dar retorno caso tenha alguma atividade que a Compliance precisa executar.</p>
-          <div class="activity-risk"><strong>Risco:</strong> <span class="chip chip-risk">Atraso no projeto</span></div>
-        </div>
-        
-
-        <div class="activity-card">
-          <div class="activity-top">
-            <h4>Relatório de erro de validação do pedidos</h4>
-            <div class="activity-badges"><span class="badge status-progress">EM ANDAMENTO</span><span class="badge prio-high">Alta</span></div>
-          </div>
-          <div class="activity-meta">
-            <span><strong>Responsável:</strong> Produto - Compliance - Integração</span>
-            <span><strong>Data prevista:</strong> 17/04/2026</span>
-          </div>
-          <p>Verificar como trazer os logs de erro de VALIDAÇÃO do pedido, e não o Log de Erro de Integração.<br>13/04 - Thiago irá ajustar o relatório para trazer os erros de validação dos pedido.</p>
-          <div class="activity-risk"><strong>Risco:</strong> <span class="chip chip-risk">Atraso no projeto</span></div>
-        </div>
-        
-
-        <div class="activity-card">
-          <div class="activity-top">
-            <h4>REINF</h4>
-            <div class="activity-badges"><span class="badge status-pending">PENDENTE</span><span class="badge prio-high">Alta</span></div>
-          </div>
-          <div class="activity-meta">
-            <span><strong>Responsável:</strong> Rafael - Mercantil</span>
-            <span><strong>Data prevista:</strong> 17/04/2026</span>
-          </div>
-          <p>Depende do pagamento do CTe para ter os impostos retidos e efetuar o agendamento da captura dos impostos</p>
-          <div class="activity-risk"><strong>Risco:</strong> <span class="chip chip-risk">Atraso no projeto</span></div>
-        </div>
-        
-
-        <div class="activity-card">
-          <div class="activity-top">
-            <h4>Campo da reforma tributária - cClassTrib </h4>
-            <div class="activity-badges"><span class="badge status-progress">EM ANDAMENTO</span><span class="badge prio-high">Alta</span></div>
-          </div>
-          <div class="activity-meta">
-            <span><strong>Responsável:</strong> Integração</span>
-            <span><strong>Data prevista:</strong> 24/04/2026</span>
-          </div>
-          <p>Feito o levantamento com a Oracle e temos como enviar o cClassTrib na integração CORE. Será desenvolvido pelo time de Integração e disponibilizado para todos os clientes. Inicio do desenvolvimento 13/04/2026.</p>
-          <div class="activity-risk"><strong>Risco:</strong> <span class="chip chip-risk">Atraso no projeto</span></div>
-        </div>
-        
-    </section>
-
-    <h2 class="section-title">Detalhamento completo</h2>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Atividade</th>
-            <th>Responsável</th>
-            <th>Status</th>
-            <th>Prioridade</th>
-            <th>Data prevista</th>
-            <th>Riscos / Impedimentos</th>
-            <th>Plano de Mitigação</th>
-          </tr>
-        </thead>
-        <tbody>
-          
-    <tr>
-      <td>Associação de linhas do Pedido </td>
-      <td>Produto - Compliance</td>
-      <td><span class="badge status-progress">EM ANDAMENTO</span></td>
-      <td><span class="badge prio-high">Alta</span></td>
-      <td>13/04/2026</td>
-      <td>Atraso no projeto</td>
-      <td>—</td>
+    <h2>Detalhamento das Atividades</h2>
+    <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Atividade</th>
+      <th>Responsável</th>
+      <th>Descrição</th>
+      <th>Status</th>
+      <th>Prioridade</th>
+      <th>Riscos / Impedimentos</th>
+      <th>Plano de Mitigação</th>
+      <th>Data prevista</th>
+      <th>RM</th>
     </tr>
-    <tr>
-      <td>Captura de NFSe no Taxfy</td>
-      <td>Rafael Rossi - Compliance</td>
-      <td><span class="badge status-progress">EM ANDAMENTO</span></td>
-      <td><span class="badge prio-high">Alta</span></td>
-      <td>13/04/2026</td>
-      <td>—</td>
-      <td>—</td>
-    </tr>
-    <tr>
-      <td>Match automatico</td>
-      <td>Rafael - Mercantil</td>
-      <td><span class="badge status-pending">PENDENTE</span></td>
-      <td><span class="badge prio-high">Alta</span></td>
-      <td>13/04/2026</td>
-      <td>—</td>
-      <td>—</td>
-    </tr>
-    <tr>
-      <td>Tempo de Processamento - Pedidos</td>
-      <td>Rafael - Mercantil</td>
-      <td><span class="badge status-pending">PENDENTE</span></td>
-      <td><span class="badge prio-high">Alta</span></td>
-      <td>13/04/2026</td>
-      <td>Atraso no projeto</td>
-      <td>—</td>
-    </tr>
-    <tr>
-      <td>CTe</td>
-      <td>Rafael - Mercantil</td>
-      <td><span class="badge status-progress">EM ANDAMENTO</span></td>
-      <td><span class="badge prio-high">Alta</span></td>
-      <td>17/04/2026</td>
-      <td>Atraso no projeto</td>
-      <td>—</td>
-    </tr>
+  </thead>
+  <tbody>
     <tr>
       <td>Pedidos Cancelado - Atualização do status do Pedido no Compliance</td>
       <td>Integração</td>
-      <td><span class="badge status-progress">EM ANDAMENTO</span></td>
-      <td><span class="badge prio-high">Alta</span></td>
-      <td>17/04/2026</td>
-      <td>—</td>
-      <td>—</td>
+      <td>Hoje o Compliance só captura do ERP pedidos de compra com o status EM ABERTO. Será necessário analise e teste do Consultor para que possamos, dentro da viabilidade, abrir um RM para melhoria do produto ou customização.</td>
+      <td>🟡 EM ANDAMENTO</td>
+      <td>Alta</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2026-04-17</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Campo da reforma tributária - cClassTrib</td>
+      <td>Integração</td>
+      <td>Feito o levantamento com a Oracle e temos como enviar o cClassTrib na integração CORE. Será desenvolvido pelo time de Integração e disponibilizado para todos os clientes. Inicio do desenvolvimento 13/04/2026.</td>
+      <td>🟡 EM ANDAMENTO</td>
+      <td>Alta</td>
+      <td>Atraso no projeto</td>
+      <td>NaN</td>
+      <td>2026-04-24</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Associação de linhas do Pedido</td>
+      <td>Produto - Compliance</td>
+      <td>Precisamos de um pedido e uma NF de evidência para análise. A customização é feita a partir da validação do Pedido e do DEPARTAMENTO.</td>
+      <td>🟡 EM ANDAMENTO</td>
+      <td>Alta</td>
+      <td>Atraso no projeto</td>
+      <td>NaN</td>
+      <td>2026-04-13</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <td>Relatório de erro de validação do pedidos</td>
       <td>Produto - Compliance - Integração</td>
-      <td><span class="badge status-progress">EM ANDAMENTO</span></td>
-      <td><span class="badge prio-high">Alta</span></td>
-      <td>17/04/2026</td>
+      <td>Verificar como trazer os logs de erro de VALIDAÇÃO do pedido, e não o Log de Erro de Integração.</td>
+      <td>🟡 EM ANDAMENTO</td>
+      <td>Alta</td>
       <td>Atraso no projeto</td>
-      <td>—</td>
+      <td>NaN</td>
+      <td>2026-04-17</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Captura de NFSe no Taxfy</td>
+      <td>Rafael Rossi - Compliance</td>
+      <td>Esta sendo feito levantamento do que temos hoje cadastrado no Taxfy, para analise e cruzamento com NFSe que foram identificadas pelo key user, que não foram baixadas pela captura de NFSe do Taxfy. \nLembrando que a captura de notas customizada foi somente para o municipio de BH, para captura das NFSe via usuario e senha, no Portal Nacional, via RPA.</td>
+      <td>🟡 EM ANDAMENTO</td>
+      <td>Alta</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2026-04-13</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Erro de IM e IE</td>
+      <td>Produto</td>
+      <td>O Compliance está validando o IM e IE na entrada dos pedidos, porem o cadastro está incorreto, com dados inconsistentes, precisa ou tirar a validação desse campo nos pedidos ou limpar, via banco de dados, o cadastro do participante.</td>
+      <td>🟡 PENDENTE</td>
+      <td>Alta</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2026-04-15</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Tempo de Processamento - Pedidos</td>
+      <td>Rafael - Mercantil</td>
+      <td>Rafael precisa validar ainda, não conseguiu testar esse ponto.</td>
+      <td>🟡 PENDENTE</td>
+      <td>Alta</td>
+      <td>Atraso no projeto</td>
+      <td>NaN</td>
+      <td>2026-04-13</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Match automatico</td>
+      <td>Rafael - Mercantil</td>
+      <td>Match está acontecendo, Rafael irá validar um processo  para dar ok.</td>
+      <td>🟡 PENDENTE</td>
+      <td>Alta</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2026-04-13</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>CTe</td>
+      <td>Rafael - Mercantil</td>
+      <td>Cte, Rafael estava fazendo teste - vai dar retorno caso tenha alguma atividade que a Compliance precisa executar.</td>
+      <td>🟡 EM ANDAMENTO</td>
+      <td>Alta</td>
+      <td>Atraso no projeto</td>
+      <td>NaN</td>
+      <td>2026-04-17</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <td>REINF</td>
       <td>Rafael - Mercantil</td>
-      <td><span class="badge status-pending">PENDENTE</span></td>
-      <td><span class="badge prio-high">Alta</span></td>
-      <td>17/04/2026</td>
+      <td>Depende do pagamento do CTe para ter os impostos retidos e efetuar o agendamento da captura dos impostos</td>
+      <td>🟡 PENDENTE</td>
+      <td>Alta</td>
       <td>Atraso no projeto</td>
-      <td>—</td>
+      <td>NaN</td>
+      <td>2026-04-17</td>
+      <td>NaN</td>
     </tr>
-    <tr>
-      <td>Campo da reforma tributária - cClassTrib </td>
-      <td>Integração</td>
-      <td><span class="badge status-progress">EM ANDAMENTO</span></td>
-      <td><span class="badge prio-high">Alta</span></td>
-      <td>24/04/2026</td>
-      <td>Atraso no projeto</td>
-      <td>—</td>
-    </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="footnote">
-      Relatório produzido automaticamente com base no conteúdo da planilha fornecida. Campos vazios na origem foram apresentados como “—” ou “Sem risco registrado”.
-    </div>
-  </div>
+  </tbody>
+</table>
 </body>
 </html>
